@@ -10,8 +10,11 @@ configuration:
   baseUrl: myvault.ibrahimhz.com
   ignorePatterns:
     - private
+    - _private
     - templates
     - .obsidian
+    - .trash
+    - "*.canvas"
   theme:
     fontOrigin: googleFonts
     cdnCaching: true

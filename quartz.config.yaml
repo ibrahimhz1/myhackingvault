@@ -252,27 +252,74 @@ plugins:
       priority: 50
       display: all
 layout:
-  groups:
-    toolbar:
-      priority: 35
-      direction: row
-      gap: 0.5rem
-  byPageType:
-    "404":
-      positions:
-        beforeBody: []
-        left: []
-        right: []
-    content: {}
-    folder:
-      exclude:
-        - reader-mode
-      positions:
-        right: []
-    tag:
-      exclude:
-        - reader-mode
-      positions:
-        right: []
-    canvas: {}
-    bases: {}
+  shared:
+    head:
+      name: Component.Head
+
+    footer:
+      name: Plugin.Footer
+      options:
+        links:
+          GitHub: "https://github.com/ibrahimhz1"
+          RSS: "/index.xml"
+
+    afterBody: []
+    # Uncomment to add Giscus comments:
+    # afterBody:
+    #   - name: Plugin.Comments
+    #     options:
+    #       provider: "giscus"
+    #       repo: "ibrahimhz1/myhackingvault"
+    #       repoId: "YOUR_REPO_ID"
+    #       category: "Announcements"
+    #       categoryId: "YOUR_CATEGORY_ID"
+
+  contentPage:
+    beforeBody:
+      - name: Plugin.Breadcrumbs
+      - name: Plugin.ArticleTitle
+      - name: Plugin.ContentMeta
+      - name: Plugin.TagList
+
+    left:
+      - name: Plugin.PageTitle
+      - name: Plugin.Spacer
+        options:
+          mobileOnly: true
+      - name: Plugin.Search
+      - name: Plugin.Darkmode
+      - name: Plugin.Explorer
+        options:
+          desktopOnly: true
+
+    right:
+      - name: Plugin.Graph
+        options:
+          localGraph:
+            depth: 2
+            showTags: true
+          globalGraph:
+            showTags: true
+      - name: Plugin.TableOfContents
+        options:
+          desktopOnly: true
+      - name: Plugin.Backlinks
+
+  listPage:
+    beforeBody:
+      - name: Plugin.Breadcrumbs
+      - name: Plugin.ArticleTitle
+      - name: Plugin.ContentMeta
+
+    left:
+      - name: Plugin.PageTitle
+      - name: Plugin.Spacer
+        options:
+          mobileOnly: true
+      - name: Plugin.Search
+      - name: Plugin.Darkmode
+      - name: Plugin.Explorer
+        options:
+          desktopOnly: true
+
+    right: []

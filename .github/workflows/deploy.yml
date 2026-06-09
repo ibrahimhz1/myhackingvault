@@ -1,0 +1,74 @@
+# .github/workflows/deploy.yml
+#
+# Triggered by:
+#   1. Push to main branch of THIS repo (your-site)
+#   2. Repository dispatch from your-notes repo (cross-repo trigger)
+#   3. Manual run via GitHub Actions UI
+#
+# What it does:
+#   - Checks out your-site (with submodules so content/ is populated)
+#   - Builds Quartz
+#   - Deploys to GitHub Pages
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  repository_dispatch:
+    types: [notes-updated]              # fired by your-notes repo on push
+  workflow_dispatch:                    # manual trigger from Actions UI
+
+# Required for GitHub Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deployment at a time; cancel in-progress if a newer push arrives
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your-site (with submodules)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0                # full history — needed for git-based dates
+          submodules: recursive         # pulls your-notes into content/
+          token: ${{ secrets.NOTES_REPO_TOKEN }}  # PAT with read access to your-notes
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Quartz plugins
+        run: npx quartz plugin install --from-config
+
+      - name: Build site
+        run: npx quartz build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

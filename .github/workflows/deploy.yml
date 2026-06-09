@@ -40,7 +40,7 @@ jobs:
         with:
           fetch-depth: 0                # full history — needed for git-based dates
           submodules: recursive         # pulls your-notes into content/
-          token: ${{ secrets.NOTES_REPO_TOKEN }}  # PAT with read access to your-notes
+          token: ${{ secrets.MYHACKINGVAULT_REPO_TOKEN }}  # PAT with read access to your-notes
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

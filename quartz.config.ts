@@ -12,7 +12,7 @@ import * as Plugin from "./quartz/plugins"
  */
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "My Notes",               // ← Change to your site name
+    pageTitle: "My Hacking Vault",               // ← Change to your site name
     pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
@@ -21,7 +21,7 @@ const config: QuartzConfig = {
       // websiteId: "YOUR_UMAMI_WEBSITE_ID",
     },
     locale: "en-US",
-    baseUrl: "yourdomain.com",           // ← Your custom domain (no https://)
+    baseUrl: "myvault.ibrahimhz.com",           // ← Your custom domain (no https://)
     ignorePatterns: [
       "private",                         // folder: content/private/ never published
       "_private",

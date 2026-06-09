@@ -1,0 +1,44 @@
+/* custom/styles/custom.scss
+ * ─────────────────────────────────────────────────────────────
+ * Put ALL your style overrides here.
+ * Quartz core CSS lives in quartz/styles/ — never edit those files
+ * directly or upgrades will conflict.
+ *
+ * Reference Quartz CSS variables: https://quartz.jzhao.xyz/layout
+ * ─────────────────────────────────────────────────────────────
+ */
+
+/* ── Typography tweaks ── */
+h1, h2, h3 {
+  font-weight: 600;
+}
+
+/* ── Wider content area ── */
+.page > #quartz-body .center {
+  max-width: 780px;
+}
+
+/* ── Callout / admonition accent ── */
+.callout[data-callout="note"] {
+  --color-callout: var(--secondary);
+}
+
+/* ── Tag pill styling ── */
+.tag-link {
+  border-radius: 4px;
+  font-size: 0.8em;
+  padding: 2px 8px;
+}
+
+/* ── Graph view: increase node size slightly ── */
+/* Override in quartz.layout.ts via Component.Graph options instead */
+
+/* ── Print / PDF export ── */
+@media print {
+  .sidebar, .toc, nav {
+    display: none !important;
+  }
+  .center {
+    max-width: 100% !important;
+  }
+}

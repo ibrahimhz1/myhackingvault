@@ -1,44 +1,261 @@
 /* custom/styles/custom.scss
- * ─────────────────────────────────────────────────────────────
- * Put ALL your style overrides here.
- * Quartz core CSS lives in quartz/styles/ — never edit those files
- * directly or upgrades will conflict.
+ * ════════════════════════════════════════════════════════════
+ *  MY HACKING VAULT — custom styles
+ *  Hacker / terminal aesthetic on top of Quartz v5 base.
  *
- * Reference Quartz CSS variables: https://quartz.jzhao.xyz/layout
- * ─────────────────────────────────────────────────────────────
+ *  RULE: Never edit quartz/styles/ — put everything here.
+ *  CSS variables reference: https://quartz.jzhao.xyz/layout
+ * ════════════════════════════════════════════════════════════
  */
 
-/* ── Typography tweaks ── */
-h1, h2, h3 {
-  font-weight: 600;
+/* ── Google Fonts import (Share Tech Mono for headings) ── */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;600&display=swap');
+
+/* ══════════════════════════════════════════════════════════
+   GLOBAL — terminal feel
+   ══════════════════════════════════════════════════════════ */
+
+/* Cursor blink on page title */
+#quartz-body .page-title::after {
+  content: "_";
+  animation: blink 1s step-end infinite;
+  color: var(--secondary);
+  font-weight: 400;
 }
 
-/* ── Wider content area ── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Site-wide max content width */
 .page > #quartz-body .center {
-  max-width: 780px;
+  max-width: 820px;
 }
 
-/* ── Callout / admonition accent ── */
-.callout[data-callout="note"] {
+/* ══════════════════════════════════════════════════════════
+   TYPOGRAPHY
+   ══════════════════════════════════════════════════════════ */
+
+h1, h2, h3, h4 {
+  font-family: "Share Tech Mono", monospace;
+  letter-spacing: -0.02em;
+}
+
+/* Heading prefix — looks like a terminal prompt */
+h1::before { content: "# ";  color: var(--secondary); opacity: 0.7; }
+h2::before { content: "## "; color: var(--secondary); opacity: 0.6; }
+h3::before { content: "### "; color: var(--secondary); opacity: 0.5; }
+
+/* ══════════════════════════════════════════════════════════
+   CODE BLOCKS — terminal window look
+   ══════════════════════════════════════════════════════════ */
+
+pre {
+  border: 1px solid var(--secondary) !important;
+  border-radius: 6px !important;
+  position: relative;
+}
+
+/* Fake terminal top bar */
+pre::before {
+  content: "● ● ●";
+  display: block;
+  font-size: 0.65em;
+  letter-spacing: 4px;
+  color: var(--secondary);
+  opacity: 0.5;
+  padding: 4px 12px 0;
+  font-family: monospace;
+}
+
+code {
+  font-family: "JetBrains Mono", monospace !important;
+  font-size: 0.88em;
+}
+
+/* Inline code */
+:not(pre) > code {
+  background: rgba(0, 255, 136, 0.07) !important;
+  border: 1px solid rgba(0, 255, 136, 0.2) !important;
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: var(--secondary) !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   LINKS
+   ══════════════════════════════════════════════════════════ */
+
+a {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+a:hover {
+  border-bottom-color: var(--secondary);
+  color: var(--secondary);
+}
+
+/* Internal wiki links */
+a.internal {
+  color: var(--secondary);
+  opacity: 0.9;
+}
+
+a.internal:hover {
+  opacity: 1;
+  text-shadow: 0 0 8px var(--secondary);
+}
+
+/* ══════════════════════════════════════════════════════════
+   CALLOUTS — styled as terminal alerts
+   ══════════════════════════════════════════════════════════ */
+
+.callout {
+  border-radius: 4px !important;
+  border-left-width: 3px !important;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.9em;
+}
+
+.callout[data-callout="warning"],
+.callout[data-callout="caution"] {
+  --color-callout: #ffaa00;
+  border-left-color: #ffaa00 !important;
+}
+
+.callout[data-callout="danger"],
+.callout[data-callout="bug"] {
+  --color-callout: #ff4444;
+  border-left-color: #ff4444 !important;
+}
+
+.callout[data-callout="tip"],
+.callout[data-callout="hint"] {
   --color-callout: var(--secondary);
+  border-left-color: var(--secondary) !important;
 }
 
-/* ── Tag pill styling ── */
+.callout[data-callout="note"] {
+  --color-callout: #4488ff;
+  border-left-color: #4488ff !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SIDEBAR & EXPLORER
+   ══════════════════════════════════════════════════════════ */
+
+/* Explorer folder/file icons prefix */
+.folder-title::before {
+  content: "> ";
+  color: var(--secondary);
+  font-family: monospace;
+  opacity: 0.7;
+}
+
+/* Sidebar accent line */
+.sidebar.left {
+  border-right: 1px solid rgba(0, 255, 136, 0.12);
+}
+
+/* ══════════════════════════════════════════════════════════
+   TAGS — pill style with hacker green
+   ══════════════════════════════════════════════════════════ */
+
 .tag-link {
-  border-radius: 4px;
-  font-size: 0.8em;
+  background: rgba(0, 255, 136, 0.07) !important;
+  border: 1px solid rgba(0, 255, 136, 0.3) !important;
+  border-radius: 3px !important;
+  color: var(--secondary) !important;
+  font-size: 0.78em;
+  font-family: "JetBrains Mono", monospace;
   padding: 2px 8px;
+  letter-spacing: 0.03em;
 }
 
-/* ── Graph view: increase node size slightly ── */
-/* Override in quartz.layout.ts via Component.Graph options instead */
+.tag-link:hover {
+  background: rgba(0, 255, 136, 0.15) !important;
+  box-shadow: 0 0 6px rgba(0, 255, 136, 0.2);
+}
 
-/* ── Print / PDF export ── */
+/* ══════════════════════════════════════════════════════════
+   GRAPH VIEW — green nodes
+   ══════════════════════════════════════════════════════════ */
+
+.graph-outer > svg > .nodes circle {
+  fill: var(--secondary) !important;
+  opacity: 0.8;
+}
+
+.graph-outer > svg > .links line {
+  stroke: var(--secondary) !important;
+  opacity: 0.2;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SEARCH
+   ══════════════════════════════════════════════════════════ */
+
+#search-bar {
+  border: 1px solid var(--secondary) !important;
+  border-radius: 4px !important;
+  font-family: "JetBrains Mono", monospace !important;
+}
+
+#search-bar:focus {
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.2) !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TABLES — grid-style terminal
+   ══════════════════════════════════════════════════════════ */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.88em;
+}
+
+th {
+  background: rgba(0, 255, 136, 0.08);
+  border-bottom: 2px solid var(--secondary);
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.85em;
+}
+
+td, th {
+  padding: 8px 12px;
+  border: 1px solid rgba(0, 255, 136, 0.1);
+}
+
+tr:hover td {
+  background: rgba(0, 255, 136, 0.04);
+}
+
+/* ══════════════════════════════════════════════════════════
+   SCROLLBAR — styled green
+   ══════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 136, 0.25);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 255, 136, 0.4); }
+
+/* ══════════════════════════════════════════════════════════
+   PRINT
+   ══════════════════════════════════════════════════════════ */
+
 @media print {
-  .sidebar, .toc, nav {
-    display: none !important;
-  }
-  .center {
-    max-width: 100% !important;
-  }
+  .sidebar, .toc, nav, #search-bar { display: none !important; }
+  .center { max-width: 100% !important; }
+  h1::before, h2::before, h3::before { content: none; }
+  pre::before { content: none; }
 }

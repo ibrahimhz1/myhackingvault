@@ -1,31 +1,32 @@
 #!/usr/bin/env bash
 # scripts/upgrade-quartz.sh
-# ─────────────────────────────────────────────────────────────
-# Safely upgrades Quartz to the latest upstream version.
+# ════════════════════════════════════════════════════════════
+# Safely upgrades Quartz v5 to the latest upstream version.
 #
 # Usage:
 #   chmod +x scripts/upgrade-quartz.sh
 #   ./scripts/upgrade-quartz.sh
 #
 # What it does:
-#   1. Stashes your content (submodule) to avoid merge conflicts
-#   2. Pulls latest changes from jackyzha0/quartz upstream
-#   3. Reinstalls npm dependencies
-#   4. Reinstalls Quartz plugins
-#   5. Does a local test build
-#
-# Your customizations (quartz.config.ts, quartz.layout.ts,
-# custom/) are isolated — conflicts are rare and contained.
-# ─────────────────────────────────────────────────────────────
+#   1. Adds upstream remote if missing
+#   2. Fetches latest changes from jackyzha0/quartz
+#   3. Shows what changed
+#   4. Caches content (Quartz built-in restore point)
+#   5. Merges — conflicts will be in quartz.config.yaml ONLY
+#   6. Reinstalls npm + plugins
+#   7. Test build locally
+# ════════════════════════════════════════════════════════════
 
 set -e
 
 UPSTREAM_REMOTE="upstream"
 UPSTREAM_URL="https://github.com/jackyzha0/quartz.git"
 
+echo ""
 echo "╔══════════════════════════════════════╗"
-echo "║     Quartz upgrade helper            ║"
+echo "║    Quartz v5 upgrade helper          ║"
 echo "╚══════════════════════════════════════╝"
+echo ""
 
 # 1. Ensure upstream remote exists
 if ! git remote get-url "$UPSTREAM_REMOTE" &>/dev/null; then
@@ -39,7 +40,7 @@ git fetch "$UPSTREAM_REMOTE"
 
 # 3. Show what's changed
 echo ""
-echo "📋 Changes since your last sync:"
+echo "📋 Commits since your last sync:"
 git log HEAD..upstream/main --oneline --no-merges | head -20
 echo ""
 read -p "Continue with upgrade? (y/N) " -n 1 -r
@@ -48,34 +49,30 @@ echo ""
 
 # 4. Cache content (Quartz built-in)
 echo "💾 Caching content..."
-npx quartz cache || true
+npx quartz cache 2>/dev/null || true
 
 # 5. Merge upstream
 echo "⬆️  Merging upstream/main..."
 if ! git merge "$UPSTREAM_REMOTE/main" --no-edit; then
   echo ""
-  echo "⚠️  Merge conflict detected."
-  echo "   Conflicts are almost always in quartz.config.ts or quartz.layout.ts."
-  echo "   Fix them in your editor, then run:"
-  echo "     git add . && git commit"
-  echo "   Or to restore your content from cache:"
-  echo "     npx quartz restore"
+  echo "⚠️  Merge conflict."
+  echo "   Conflicts are almost always in quartz.config.yaml"
+  echo "   Fix in your editor, then: git add . && git commit"
+  echo "   Or restore content: npx quartz restore"
   exit 1
 fi
 
-# 6. Reinstall dependencies
+# 6. Reinstall
 echo "📦 Reinstalling npm dependencies..."
 npm ci
 
-# 7. Reinstall plugins
 echo "🔌 Reinstalling Quartz plugins..."
-npx quartz plugin install --from-config
+npx quartz plugin install
 
-# 8. Test build
-echo "🔨 Running test build..."
+# 7. Test build
+echo "🔨 Test build..."
 npx quartz build
 
 echo ""
-echo "✅ Upgrade complete! Review the output above, then:"
+echo "✅ Done! Review output above, then push:"
 echo "   git push origin main"
-echo "   (GitHub Actions will deploy automatically)"

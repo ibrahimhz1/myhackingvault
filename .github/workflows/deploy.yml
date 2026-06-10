@@ -1,9 +1,24 @@
+# .github/workflows/deploy.yml
+#
+# Quartz v5 — Deploy to GitHub Pages
+# ════════════════════════════════════
+# Triggers:
+#   1. Push to main branch
+#   2. Cross-repo dispatch from myhackingnotesprivate (notes updated)
+#   3. Manual trigger from GitHub Actions UI
+#
+# Key v5 changes vs older versions:
+#   - Node 22+ required (using 22 LTS for stability)
+#   - `npx quartz plugin install` (no --from-config flag in v5)
+#   - Plugin cache uses quartz.lock.json as key
+#   - actions/checkout@v4, setup-node@v4 (stable versions)
+
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
-      - main        # or v5 if you renamed your branch
+      - main
   repository_dispatch:
     types: [notes-updated]
   workflow_dispatch:
@@ -15,51 +30,46 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: false   # ← docs say false now, not true
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6   # ← v6 now
+      - name: Checkout (with notes submodule)
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          submodules: recursive
+          fetch-depth: 0              # full history for git-based dates
+          submodules: recursive       # pulls myhackingnotesprivate → content/
           token: ${{ secrets.NOTES_REPO_TOKEN }}
 
-      - uses: actions/setup-node@v6  # ← v6 now
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
         with:
-          node-version: 24           # ← node 24 now, not 22
-
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: 22            # Quartz v5 requires Node 22+
+          cache: "npm"
 
       - name: Cache Quartz plugins
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: .quartz/plugins
-          key: ${{ runner.os }}-plugins-${{ hashFiles('quartz.lock.json') }}
+          key: ${{ runner.os }}-quartz-plugins-${{ hashFiles('quartz.lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-plugins-
+            ${{ runner.os }}-quartz-plugins-
 
-      - name: Install dependencies
+      - name: Install npm dependencies
         run: npm ci
 
-      - name: Install Quartz plugins
-        run: npx quartz plugin install   # ← no --from-config flag
+      - name: Install Quartz community plugins
+        run: npx quartz plugin install
 
       - name: Build site
         run: npx quartz build
 
-      - name: Upload artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: public
+          path: public/
 
   deploy:
     needs: build

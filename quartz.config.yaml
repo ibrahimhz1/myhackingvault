@@ -1,13 +1,21 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
+#
+# ╔══════════════════════════════════════════════════════════════╗
+# ║            MY HACKING VAULT — quartz.config.yaml            ║
+# ║  PRIMARY config for Quartz v5. Edit THIS file, not the .ts  ║
+# ║  When upgrading: git pull upstream → conflicts here only    ║
+# ╚══════════════════════════════════════════════════════════════╝
+
 configuration:
-  pageTitle: h-Vault
-  pageTitleSuffix: ""
+  pageTitle: "Hz Knowledge Base"
+  pageTitleSuffix: " | myvault.ibrahimhz.com"
   enableSPA: true
   enablePopovers: true
   analytics:
-    provider: plausible
+    provider: null                      # ← set to umami/plausible when ready
   locale: en-US
-  baseUrl: myvault.ibrahimhz.com
+  baseUrl: myvault.ibrahimhz.com        # ← no https://, no trailing slash
+
   ignorePatterns:
     - private
     - _private
@@ -15,35 +23,56 @@ configuration:
     - .obsidian
     - .trash
     - "*.canvas"
+
   theme:
     fontOrigin: googleFonts
     cdnCaching: true
     typography:
-      header: Schibsted Grotesk
-      body: Source Sans Pro
-      code: IBM Plex Mono
+      header: "Share Tech Mono"         # hacker terminal font for headings
+      body: "Source Sans Pro"
+      code: "JetBrains Mono"            # best code font for security notes
     colors:
+      # ── Light mode (minimal — most users will be in dark) ──
       lightMode:
-        light: "#faf8f8"
-        lightgray: "#e5e5e5"
-        gray: "#b8b8b8"
-        darkgray: "#4e4e4e"
-        dark: "#2b2b2b"
-        secondary: "#284b63"
-        tertiary: "#84a59d"
-        highlight: rgba(143, 159, 169, 0.15)
-        textHighlight: "#fff23688"
+        light: "#f0f4f0"
+        lightgray: "#d8e0d8"
+        gray: "#8a9a8a"
+        darkgray: "#2a3a2a"
+        dark: "#0d1a0d"
+        secondary: "#00aa44"            # terminal green
+        tertiary: "#007733"
+        highlight: "rgba(0, 170, 68, 0.10)"
+        textHighlight: "#00ff4488"
+      # ── Dark mode — hacker terminal aesthetic ──
       darkMode:
-        light: "#161618"
-        lightgray: "#393639"
-        gray: "#646464"
-        darkgray: "#d4d4d4"
-        dark: "#ebebec"
-        secondary: "#7b97aa"
-        tertiary: "#84a59d"
-        highlight: rgba(143, 159, 169, 0.15)
-        textHighlight: "#b3aa0288"
+        light: "#0d0d0d"                # near-black background
+        lightgray: "#1a1a2e"            # dark navy sidebar bg
+        gray: "#3a3a5c"                 # muted borders
+        darkgray: "#a0a0b0"             # body text (readable grey)
+        dark: "#e0ffe0"                 # near-white text — slight green tint
+        secondary: "#00ff88"            # bright terminal green — primary accent
+        tertiary: "#00cc66"             # dimmer green — hover states
+        highlight: "rgba(0, 255, 136, 0.08)"
+        textHighlight: "#00ff8844"
+
+# ══════════════════════════════════════════════════════════════
+# PLUGINS — ordered by execution (order: field controls sequence)
+# ══════════════════════════════════════════════════════════════
 plugins:
+  # ── Transformers (parse & transform content) ──────────────
+  - source: github:quartz-community/note-properties
+    enabled: true
+    options:
+      includeAll: false
+      includedProperties:
+        - description
+        - tags
+        - aliases
+      hidePropertiesView: false
+      delimiters: "---"
+      language: yaml
+    order: 5
+
   - source: github:quartz-community/created-modified-date
     enabled: true
     options:
@@ -53,190 +82,82 @@ plugins:
         - git
         - filesystem
     order: 10
+
   - source: github:quartz-community/syntax-highlighting
     enabled: true
     options:
       theme:
         light: github-light
-        dark: github-dark
-      keepBackground: false
+        dark: one-dark-pro             # dark theme for code blocks
+      keepBackground: true             # keep dark bg even in light mode
     order: 20
+
   - source: github:quartz-community/obsidian-flavored-markdown
     enabled: true
     options:
       enableInHtmlEmbed: false
       enableCheckbox: true
     order: 30
+
   - source: github:quartz-community/github-flavored-markdown
     enabled: true
     order: 40
+
   - source: github:quartz-community/table-of-contents
     enabled: true
     order: 50
     layout:
       position: right
       priority: 30
+
   - source: github:quartz-community/crawl-links
     enabled: true
     options:
       markdownLinkResolution: shortest
     order: 60
+
   - source: github:quartz-community/description
     enabled: true
     order: 70
+
   - source: github:quartz-community/latex
     enabled: true
     options:
       renderEngine: katex
     order: 80
-  - source: github:quartz-community/citations
-    enabled: false
-    order: 85
-  - source: github:quartz-community/hard-line-breaks
-    enabled: false
-    order: 90
-  - source: github:quartz-community/ox-hugo
-    enabled: false
-    order: 91
+
   - source: github:quartz-community/roam
     enabled: false
-    order: 92
-  - source: github:quartz-community/remove-draft
-    enabled: true
+    order: 90
+
+  - source: github:quartz-community/ox-hugo
+    enabled: false
+    order: 95
+
+  - source: github:quartz-community/hard-line-breaks
+    enabled: false
+    order: 100
+
+  - source: github:quartz-community/citations
+    enabled: false
+    order: 110
+
+  # ── Filters (what gets published) ─────────────────────────
   - source: github:quartz-community/explicit-publish
-    enabled: false
-  - source: github:quartz-community/alias-redirects
-    enabled: true
-  - source: github:quartz-community/content-index
-    enabled: true
-    options:
-      enableSiteMap: true
-      enableRSS: true
-  - source: github:quartz-community/favicon
-    enabled: true
-  - source: github:quartz-community/og-image
-    enabled: true
-  - source: github:quartz-community/cname
-    enabled: true
-  - source: github:quartz-community/canvas-page
-    enabled: true
-  - source: github:quartz-community/content-page
-    enabled: true
-  - source: github:quartz-community/folder-page
-    enabled: true
-  - source: github:quartz-community/tag-page
-    enabled: true
-  - source: github:quartz-community/explorer
-    enabled: true
-    layout:
-      position: left
-      priority: 50
-  - source: github:quartz-community/graph
-    enabled: true
-    layout:
-      position: right
-      priority: 10
-  - source: github:quartz-community/search
-    enabled: true
-    layout:
-      position: left
-      priority: 20
-      group: toolbar
-      groupOptions:
-        grow: true
-  - source: github:quartz-community/backlinks
-    enabled: true
-    layout:
-      position: right
-      priority: 50
-  - source: github:quartz-community/article-title
-    enabled: true
-    layout:
-      position: beforeBody
-      priority: 10
-  - source: github:quartz-community/content-meta
-    enabled: true
-    layout:
-      position: beforeBody
-      priority: 20
-  - source: github:quartz-community/tag-list
-    enabled: false
-    layout:
-      position: beforeBody
-      priority: 30
-  - source: github:quartz-community/page-title
-    enabled: true
-    layout:
-      position: left
-      priority: 10
-  - source: github:quartz-community/darkmode
-    enabled: true
-    layout:
-      position: left
-      priority: 30
-      group: toolbar
-  - source: github:quartz-community/reader-mode
-    enabled: true
-    layout:
-      position: left
-      priority: 35
-      group: toolbar
-  - source: github:quartz-community/breadcrumbs
-    enabled: true
-    layout:
-      position: beforeBody
-      priority: 5
-      condition: not-index
-  - source: github:quartz-community/comments
-    enabled: false
-    options:
-      provider: giscus
-      options: {}
-    layout:
-      position: afterBody
-      priority: 10
-  - source: github:quartz-community/footer
-    enabled: true
-    options:
-      links:
-        GitHub: https://github.com/ibrahimhz1
-  - source: github:quartz-community/recent-notes
-    enabled: false
-  - source: github:quartz-community/spacer
-    enabled: true
-    options: {}
-    order: 25
-    layout:
-      position: left
-      priority: 25
-      display: mobile-only
-  - source: github:quartz-community/bases-page
-    enabled: true
-    options: {}
-    order: 50
-  - source: github:quartz-community/note-properties
-    enabled: true
-    options:
-      includeAll: false
-      includedProperties:
-        - description
-        - tags
-        - aliases
-      excludedProperties: []
-      hidePropertiesView: false
-      delimiters: ---
-      language: yaml
-    order: 5
-    layout:
-      position: beforeBody
-      priority: 15
-      display: all
+    enabled: true                      # ONLY notes with publish: true are built
+    order: 10
+
+  - source: github:quartz-community/remove-draft
+    enabled: true                      # skip notes with draft: true
+    order: 20
+
   - source: github:quartz-community/unlisted-pages
     enabled: true
     options: {}
     order: 45
+
   - source: github:quartz-community/encrypted-pages
-    enabled: true
+    enabled: false                     # enable if you want password-protected notes
     options:
       iterations: 600000
       passwordField: password
@@ -247,81 +168,218 @@ plugins:
       position: body
       priority: 100
       display: all
+
+  # ── Emitters (generate output files) ──────────────────────
+  - source: github:quartz-community/alias-redirects
+    enabled: true
+    order: 10
+
+  - source: github:quartz-community/content-page
+    enabled: true
+    order: 20
+
+  - source: github:quartz-community/folder-page
+    enabled: true
+    order: 30
+
+  - source: github:quartz-community/tag-page
+    enabled: true
+    order: 40
+
+  - source: github:quartz-community/bases-page
+    enabled: true
+    options: {}
+    order: 50
+
+  - source: github:quartz-community/content-index
+    enabled: true
+    options:
+      enableSiteMap: true
+      enableRSS: true
+      rssLimit: 30
+      rssFullHtml: false
+      includeEmptyFiles: false
+    order: 60
+
+  - source: github:quartz-community/og-image
+    enabled: true                      # auto-generates OG images for social sharing
+    order: 70
+
+  - source: github:quartz-community/cname
+    enabled: true                      # auto-creates CNAME file for custom domain
+    options:
+      cname: myvault.ibrahimhz.com
+    order: 80
+
+  - source: github:quartz-community/favicon
+    enabled: true
+    order: 90
+
+  - source: github:quartz-community/canvas-page
+    enabled: true
+    options: {}
+    order: 100
+
+  # ── Layout Components ──────────────────────────────────────
+  - source: github:quartz-community/page-title
+    enabled: true
+    layout:
+      position: left
+      priority: 10
+
+  - source: github:quartz-community/search
+    enabled: true
+    layout:
+      position: left
+      priority: 20
+
+  - source: github:quartz-community/darkmode
+    enabled: true
+    layout:
+      position: left
+      priority: 30
+      group: toolbar
+
+  - source: github:quartz-community/reader-mode
+    enabled: true
+    layout:
+      position: left
+      priority: 35
+      group: toolbar
+
+  - source: github:quartz-community/spacer
+    enabled: true
+    options: {}
+    order: 25
+    layout:
+      position: left
+      priority: 25
+      display: mobile-only
+
+  - source: github:quartz-community/explorer
+    enabled: true
+    options:
+      title: "[ vault ]"              # hacker-style explorer title
+      folderClickBehavior: collapse
+      folderDefaultState: collapsed
+      useSavedState: true
+    layout:
+      position: left
+      priority: 50
+
+  - source: github:quartz-community/breadcrumbs
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 5
+      condition: not-index
+
+  - source: github:quartz-community/article-title
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 10
+
+  - source: github:quartz-community/content-meta
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 20
+
+  - source: github:quartz-community/tag-list
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 30
+
+  - source: github:quartz-community/graph
+    enabled: true
+    options:
+      localGraph:
+        showTags: true
+        depth: 2
+        scale: 1.1
+        repelForce: 0.5
+        centerForce: 0.3
+        linkDistance: 30
+        fontSize: 0.6
+        opacityScale: 1
+      globalGraph:
+        showTags: true
+        scale: 0.9
+    layout:
+      position: right
+      priority: 10
+
+  - source: github:quartz-community/backlinks
+    enabled: true
+    layout:
+      position: right
+      priority: 20
+
+  - source: github:quartz-community/recent-notes
+    enabled: true
+    options:
+      title: "Recent Notes"        # hacker flavour
+      limit: 5
+    layout:
+      position: right
+      priority: 25
+
   - source: github:quartz-community/stacked-pages
     enabled: false
     layout:
       position: afterBody
       priority: 50
       display: all
-layout:
-  shared:
-    head:
-      name: Component.Head
 
-    footer:
-      name: Plugin.Footer
+  - source: github:quartz-community/comments
+    enabled: false                     # enable when giscus is set up
+    options:
+      provider: giscus
       options:
-        links:
-          GitHub: "https://github.com/ibrahimhz1"
-          RSS: "/index.xml"
+        repo: ibrahimhz1/myhackingvault
+        repoId: ""                     # ← fill from giscus.app
+        category: Announcements
+        categoryId: ""                 # ← fill from giscus.app
+        lang: en
+    layout:
+      position: afterBody
+      priority: 10
 
-    afterBody: []
-    # Uncomment to add Giscus comments:
-    # afterBody:
-    #   - name: Plugin.Comments
-    #     options:
-    #       provider: "giscus"
-    #       repo: "ibrahimhz1/myhackingvault"
-    #       repoId: "YOUR_REPO_ID"
-    #       category: "Announcements"
-    #       categoryId: "YOUR_CATEGORY_ID"
+  - source: github:quartz-community/footer
+    enabled: true
+    options:
+      links:
+        GitHub: https://github.com/ibrahimhz1
+        Linkedin: https://linkedin.com/in/ibrahimhz
+      showQuartzVersion: false
 
-  contentPage:
-    beforeBody:
-      - name: Plugin.Breadcrumbs
-      - name: Plugin.ArticleTitle
-      - name: Plugin.ContentMeta
-      - name: Plugin.TagList
-
-    left:
-      - name: Plugin.PageTitle
-      - name: Plugin.Spacer
-        options:
-          mobileOnly: true
-      - name: Plugin.Search
-      - name: Plugin.Darkmode
-      - name: Plugin.Explorer
-        options:
-          desktopOnly: true
-
-    right:
-      - name: Plugin.Graph
-        options:
-          localGraph:
-            depth: 2
-            showTags: true
-          globalGraph:
-            showTags: true
-      - name: Plugin.TableOfContents
-        options:
-          desktopOnly: true
-      - name: Plugin.Backlinks
-
-  listPage:
-    beforeBody:
-      - name: Plugin.Breadcrumbs
-      - name: Plugin.ArticleTitle
-      - name: Plugin.ContentMeta
-
-    left:
-      - name: Plugin.PageTitle
-      - name: Plugin.Spacer
-        options:
-          mobileOnly: true
-      - name: Plugin.Search
-      - name: Plugin.Darkmode
-      - name: Plugin.Explorer
-        options:
-          desktopOnly: true
-
-    right: []
+# ══════════════════════════════════════════════════════════════
+# LAYOUT — per-page-type overrides
+# ══════════════════════════════════════════════════════════════
+layout:
+  groups:
+    toolbar:
+      priority: 35
+      direction: row
+      gap: 0.5rem
+  byPageType:
+    "404":
+      positions:
+        beforeBody: []
+        left: []
+        right: []
+    content: {}                        # use defaults for note pages
+    folder:
+      exclude:
+        - reader-mode
+      positions:
+        right: []                      # no graph/backlinks on folder pages
+    tag:
+      exclude:
+        - reader-mode
+      positions:
+        right: []
+    canvas: {}
+    bases: {}

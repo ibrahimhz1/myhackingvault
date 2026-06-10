@@ -42,6 +42,8 @@ jobs:
           fetch-depth: 0              # full history for git-based dates
           submodules: recursive       # pulls myhackingnotesprivate → content/
           token: ${{ secrets.NOTES_REPO_TOKEN }}
+      - name: Update notes submodule to latest
+        run: git submodule update --remote content
 
       - name: Setup Node.js 22
         uses: actions/setup-node@v4
